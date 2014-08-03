@@ -1,0 +1,108 @@
+package com.example.claremontantibiketheft;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.GridView;
+import android.widget.TextView;
+
+public class FinishedReport extends FragmentActivity {
+	
+	private int hour;
+	private int minute;
+ 
+	private int year;
+	private int month;
+	private int day;
+ 
+	static final int DATE_DIALOG_ID = 999;
+	static final int TIME_DIALOG_ID = 998;
+	
+	public String reportNum = "";
+	public String policeEmail = "";
+	public String didLock = "";
+	public String lockBrand = "";
+	public String bikeLoc = "";
+	public String moreDescript = "";
+	
+	public static final String PREFS_NAME = "MyPrefsFile";
+	public SharedPreferences prefs = null; 
+	public SharedPreferences.Editor editor = null;
+	
+	/**
+	 * displayed finished, unchangeable report
+	 */
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.finished_report);
+		
+		prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+		editor = prefs.edit();
+		
+		GridView grid = (GridView) findViewById(R.id.theft_grid);
+		grid.setBackgroundColor(Color.LTGRAY);
+		final GridIncidentReport ga = new GridIncidentReport(this);
+	    grid.setAdapter(ga);
+	    
+	    reportNum = prefs.getString("reportNum", "");
+	    policeEmail = prefs.getString("policeEmail", "");
+	    didLock = prefs.getString("didLock", "");
+	    
+	    if (didLock.toLowerCase().equals("y")) {
+	    	didLock = "Yes";
+	    } else {
+	    	didLock = "No";
+	    }
+	    
+	    lockBrand = prefs.getString("lockBrand", "");
+    	bikeLoc = prefs.getString("bikeLoc", "");
+    	moreDescript = prefs.getString("moreDescript", "");
+    	hour = prefs.getInt("hour", 0);
+    	minute = prefs.getInt("minute", 0);
+    	year = prefs.getInt("year", 0);
+    	month = prefs.getInt("month", 0);
+    	day = prefs.getInt("day", 0);
+    	
+    	TextView tv = (TextView) findViewById(R.id.police_num);
+    	tv.setText("Police Report Number: " + reportNum);
+
+    	tv = (TextView) findViewById(R.id.police_email);
+    	tv.setText("Police Email Address: " + policeEmail);
+    	
+    	tv = (TextView) findViewById(R.id.tvDate);
+    	tv.setText(new StringBuilder().append(month + 1).append("-").append(day).append("-").append(year).append(" "));
+    	
+    	tv = (TextView) findViewById(R.id.tvTime);
+    	tv.setText(new StringBuilder().append(pad(hour)).append(":").append(pad(minute)));
+    	
+    	tv = (TextView) findViewById(R.id.locked);
+    	tv.setText("Did you lock the bike? " + didLock);
+    	
+    	tv = (TextView) findViewById(R.id.lock_type);
+    	tv.setText("Lock Brand: " + lockBrand);
+    	
+    	tv = (TextView) findViewById(R.id.bike_place);
+    	tv.setText("Where Bike was Placed: " + bikeLoc);
+    	
+    	tv = (TextView) findViewById(R.id.description);
+    	tv.setText(moreDescript);
+	}
+	
+	//method to display time correctly
+	private static String pad(int c) {
+		if (c >= 10)
+		   return String.valueOf(c);
+		else
+		   return "0" + String.valueOf(c);
+	}
+	
+	//redirects to five fragments
+	public void onClick (View view) {
+		Intent intent = new Intent(this, TheFiveFrags.class);
+		startActivity(intent);
+	}
+}
